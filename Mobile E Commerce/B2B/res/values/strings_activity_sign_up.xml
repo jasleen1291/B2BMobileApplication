@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="FirstName">First Name</string>
+    <string name="LastName">Last Name</string>
+    <string name="email">Email</string>
+    <string name="phone1">Phone1</string>
+    <string name="phone2">Phone2</string>
+    <string name="address">Address</string>
+    <string name="city">Select your city</string>
+    <string name="state">Select your state</string>
+    <string name="country">Select your country</string>
+    <string name="zipcode">Zipcode</string>
+    <string name="balance">Enter your opening balance</string>
+    <string name="SignUpAs">Signup As</string>
+    <string name="done">Done</string>
+    <string name="updateInfo">Update Info</string>
+    
+</resources>

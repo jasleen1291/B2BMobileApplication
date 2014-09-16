@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="firsttime">Please fill the following details to complete your registeration</string>
+    <string name="shopname">Shop Name</string>
+    <string name="shopowner">Shop owner</string>
+    <string name="paymentemail">Enter your payment email(Paypal Business account email)</string>
+    
+</resources>

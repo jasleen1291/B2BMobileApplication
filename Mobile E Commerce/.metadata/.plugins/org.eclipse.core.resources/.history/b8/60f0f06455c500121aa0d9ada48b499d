@@ -1,0 +1,9 @@
+package com.jc.b2b.utils;
+
+
+public class ShoppingcartItem {
+
+String name,pathname;
+float qty,cp,total;
+
+}

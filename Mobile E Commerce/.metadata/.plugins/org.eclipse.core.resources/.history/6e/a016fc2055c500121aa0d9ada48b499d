@@ -1,0 +1,52 @@
+package com.jc.b2b.utils;
+
+import android.graphics.Bitmap;
+
+public class ShoppingcartItem {
+
+String name,qty,pathname,cp,total;
+
+public ShoppingcartItem( String name, String qty, String pathname,
+		String cp, String total) {
+	super();
+	
+	this.name = name;
+	this.qty = qty;
+	this.pathname = pathname;
+	this.cp = cp;
+	this.total = total;
+}
+public String getTotal() {
+	return total;
+}
+public void setTotal(String total) {
+	this.total = total;
+}
+public String getCp() {
+	return cp;
+}
+public void setCp(String cp) {
+	this.cp = cp;
+}
+
+
+public String getName() {
+	return name;
+}
+public void setName(String name) {
+	this.name = name;
+}
+public String getQty() {
+	return qty;
+}
+public void setQty(String qty) {
+	this.qty = qty;
+}
+public String getPathname() {
+	return pathname;
+}
+public void setPathname(String pathname) {
+	this.pathname = pathname;
+}
+
+}

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="screenname">Screen Name/ Username</string>
+    <string name="pass">Password</string>
+    <string name="alreadyRegistered">Already Registered? Click here to login</string>
+   
+</resources>

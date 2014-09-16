@@ -1,0 +1,13 @@
+package com.jc.b2b.utils;
+
+import android.os.AsyncTask;
+
+public class FetchShopInfo extends AsyncTask<String, String, String> {
+
+	@Override
+	protected String doInBackground(String... arg0) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+}

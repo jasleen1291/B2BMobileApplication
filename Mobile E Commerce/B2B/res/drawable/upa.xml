@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item >
+        <shape android:shape="rectangle"
+            >
+            <gradient android:endColor="#0066CC" android:startColor="#000033"/>
+            </shape>
+    </item>
+<item>
+    <bitmap  android:src="@drawable/up" android:gravity="left|center_vertical">
+    
+
+</bitmap>
+</item>
+</layer-list>

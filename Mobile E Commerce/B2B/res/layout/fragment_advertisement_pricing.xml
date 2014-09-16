@@ -1,0 +1,55 @@
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+     >
+
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+     >
+
+    <TextView
+        style="@style/titlebarstyle"
+        android:text="@string/advertisementPricing" />
+
+    <EditText
+        android:id="@+id/desc"
+        style="@style/EditTextStyle"
+        android:hint="@string/desc" />
+
+    <EditText
+        android:id="@+id/days"
+        style="@style/EditTextStyle"
+        android:hint="@string/days" 
+        android:inputType="number"
+        />
+
+    <Spinner
+        android:id="@+id/category"
+        style="@style/SpinnerStyle"
+        android:prompt="@string/pickCategory" />
+
+    <EditText
+        android:id="@+id/cost"
+        style="@style/EditTextStyle"
+        android:hint="@string/cost" />
+
+    <Spinner
+        android:id="@+id/type"
+        style="@style/SpinnerStyle"
+        android:entries="@array/typeArray"
+        android:prompt="@string/type" />
+
+    <Button
+        android:id="@+id/button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dp"
+        android:text="@string/submit" />
+
+</LinearLayout>
+</ScrollView>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_gravity="left"
+        android:contentDescription="@string/action_forgot_password"
+        android:padding="5dp"
+        android:src="@drawable/notavailable" />
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/imageView1"
+        android:stretchColumns="*"
+        android:orientation="vertical"
+        android:gravity="left"
+        android:padding="0dp" >
+
+        <TableRow
+            android:id="@+id/TableRow4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+               
+                android:text="@string/itemname" />
+
+            <TextView
+                android:id="@+id/name"
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="right"
+                android:textIsSelectable="false" />
+        </TableRow>
+ <TableRow
+            android:id="@+id/TableRow5"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+               
+                android:text="@string/itemname" />
+
+            <TextView
+                android:id="@+id/name2"
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="right"
+                android:textIsSelectable="false" />
+        </TableRow>
+        
+
+    </TableLayout>
+
+</RelativeLayout>

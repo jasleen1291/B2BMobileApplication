@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center_vertical"
+        android:contentDescription="@string/action_forgot_password"
+        android:focusable="false"
+        android:src="@drawable/cell_shape" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="false"
+        android:focusable="false"
+        android:stretchColumns="*" >
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false" >
+
+            <TextView
+                android:id="@+id/textView4"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/textview_border"
+                android:text="@string/itemname" />
+
+            <TextView
+                android:id="@+id/itemname"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_border"
+                android:textIsSelectable="true" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false" >
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_border"
+                android:text="@string/qty" />
+
+            <TextView
+                android:id="@+id/totalitems"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/textview_border"
+                android:text="@string/zero" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false" >
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_border"
+                android:text="@string/cp" />
+
+            <TextView
+                android:id="@+id/cp"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_border"
+                android:text="@string/zero" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:clickable="false"
+            android:focusable="false" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/textview_border"
+                android:text="@string/total" />
+
+            <TextView
+                android:id="@+id/total"
+                android:layout_width="100dp"
+                android:layout_height="match_parent"
+                android:background="@drawable/textview_border"
+                android:text="@string/zero" />
+        </TableRow>
+    </TableLayout>
+
+</LinearLayout>

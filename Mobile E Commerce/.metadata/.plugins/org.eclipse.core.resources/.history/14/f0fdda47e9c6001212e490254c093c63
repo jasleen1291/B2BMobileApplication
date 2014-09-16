@@ -1,0 +1,91 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<LinearLayout 
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@android:color/holo_green_dark"
+    >
+
+    <!-- TODO: Update blank fragment layout -->
+
+    
+
+    <TextView
+        style="@style/titlebarstyle"
+        android:text="@string/view_warehouses" />
+
+    <EditText
+        android:id="@+id/editText1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/name"
+        style="@style/EditTextStyle"
+        android:ems="10" >
+
+        <requestFocus />
+    </EditText>
+
+    <EditText
+        android:id="@+id/editText2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/EditTextStyle"
+        android:hint="@string/address"
+        android:ems="10" />
+     <TextView
+                style="@style/TextViewStyle"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:text="@string/country" />
+
+            <Spinner
+                android:id="@+id/country"
+                style="@style/SpinnerStyle"
+                android:prompt="@string/country" 
+                
+               	
+                />
+
+            <TextView
+                style="@style/TextViewStyle"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:text="@string/state" />
+
+            <Spinner
+                android:id="@+id/state"
+                style="@style/SpinnerStyle"
+                android:prompt="@string/state" />
+
+            <TextView
+                style="@style/TextViewStyle"
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:text="@string/city" />
+
+            <Spinner
+                android:id="@+id/city"
+                style="@style/SpinnerStyle"
+                android:prompt="@string/city" />
+
+            <EditText
+                android:id="@+id/zipcode"
+                style="@style/EditTextStyle"
+                android:hint="@string/zipcode"
+                android:imeOptions="actionDone"
+                android:inputType="number"
+                 />
+
+    <Button
+        android:id="@+id/submit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="@string/submit" />
+
+
+</LinearLayout>
+</ScrollView>

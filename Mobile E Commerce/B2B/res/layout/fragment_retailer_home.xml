@@ -1,0 +1,162 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".SupplierHome" >
+
+    <!-- TODO: Update blank fragment layout -->
+
+    <TextView
+        style="@style/titlebarstyle"
+        android:text="@string/welcome" />
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="fill_horizontal"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:stretchColumns="1" >
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/shopname" />
+
+                <EditText
+                    android:id="@+id/shopname"
+                    style="@style/EditTextStyle"
+                    android:ems="10"
+                    android:hint="@string/shopname" >
+
+                    <requestFocus />
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/desc" />
+
+                <EditText
+                    android:id="@+id/desc"
+                    style="@style/EditTextStyle"
+                    android:ems="10"
+                    android:hint="@string/desc" >
+                </EditText>
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/noofcategories" />
+
+                <TextView
+                    android:id="@+id/noofcategories"
+                    style="@style/EditTextStyle"
+                    android:ems="10"
+                    android:textIsSelectable="false"
+                    android:hint="@string/noofcategories" />
+                
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/itemsSelling" />
+
+                <TextView
+                    android:id="@+id/itemsSelling"
+                    style="@style/EditTextStyle"
+                    android:ems="10"
+                    android:textIsSelectable="false"
+                    android:hint="@string/itemsSelling" />
+               
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/itemsAvailable" />
+
+                <TextView
+                    android:id="@+id/itemsAvailable"
+                    style="@style/EditTextStyle"
+                    android:ems="10"
+                    android:textIsSelectable="false"
+                    android:hint="@string/itemsAvailable" />
+               
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/expirydate" />
+
+                <TextView
+                    android:id="@+id/expirydate"
+                    style="@style/EditTextStyle"
+                    android:ems="10"
+                    android:textIsSelectable="false"
+                    android:hint="@string/expirydate" />
+               
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" >
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/paymentEmail" />
+
+                <EditText
+                    android:id="@+id/paymentemail"
+                    style="@style/EditTextStyle"
+                    android:ems="10"
+                    android:inputType="textEmailAddress"
+                    android:hint="@string/paymentEmail" >
+                </EditText>
+            </TableRow>
+        </TableLayout>
+    </ScrollView>
+
+<Button
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_horizontal"
+    android:id="@+id/update"
+    android:layout_margin="10dp"
+    android:text="@string/update" />
+
+</LinearLayout>

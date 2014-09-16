@@ -1,0 +1,83 @@
+package com.jc.b2b.utils;
+
+ 
+import java.io.File;
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+
+import android.app.Activity;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+public class Uploader extends Thread{
+    private File f;
+    private String url;
+    Handler h;
+    MultipartEntity entity;
+    Activity act;
+    List<NameValuePair> params;
+    public Uploader(File f, String url, Handler h, MultipartEntity entity,
+			Activity act, List<NameValuePair> params) {
+		super();
+		this.f = f;
+		this.url = url;
+		this.h = h;
+		this.entity = entity;
+		this.act = act;
+		this.params = params;
+	}
+	public Uploader(File f,String url,Handler h,MultipartEntity entity){
+        this.url=url;
+        this.f=f;
+        this.h=h;
+        this.entity=entity;
+    }
+    @Override
+    public void run() {
+        // TODO Auto-generated method stub
+        upload();
+    }
+    private void upload() {
+ 
+        HttpClient httpclient = new DefaultHttpClient();
+        HttpPost httppost = new HttpPost(url);
+ 
+        try {
+          
+            entity.addPart("data", new FileBody(f));
+ 
+            httppost.setEntity(entity);
+            HttpResponse response = httpclient.execute(httppost);
+            HttpEntity entity2 = response.getEntity();
+            String responseString = EntityUtils.toString(entity2, "UTF-8");
+           if(act!=null)
+           {
+        	   new InsertForm(act, params).execute(url);
+           }
+            
+            Message message=h.obtainMessage();
+            message.obj=responseString;
+            h.sendMessage(message);
+ 
+        }
+        catch (ClientProtocolException e) {
+            Log.d("[Jin]", e.getMessage(),e);
+        }
+        catch (IOException e) {
+            Log.d("[Jin]", e.getMessage(),e);
+        }
+ 
+    }
+ 
+}

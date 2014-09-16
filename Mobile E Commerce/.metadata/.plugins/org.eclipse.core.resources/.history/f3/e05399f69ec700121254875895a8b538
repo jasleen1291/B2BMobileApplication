@@ -1,0 +1,58 @@
+package com.jc.b2b.utils;
+
+import java.util.ArrayList;
+
+
+public class ShoppingcartItem {
+
+String name,pathname;
+float qty,cp,total;
+Double dis;
+
+public Double getDis() {
+	return dis;
+}
+public void setDis(Double dis2) {
+	this.dis = dis2;
+}
+public String getName() {
+	return name;
+}
+public void setName(String name) {
+	this.name = name;
+}
+public String getPathname() {
+	return pathname;
+}
+public void setPathname(String pathname) {
+	this.pathname = pathname;
+}
+public float getQty() {
+	return qty;
+}
+public void setQty(float qty) {
+	this.qty = qty;
+}
+public float getCp() {
+	return cp;
+}
+public void setCp(float cp) {
+	this.cp = cp;
+}
+public float getTotal() {
+	return total;
+}
+public void setTotal(float total) {
+	this.total = total;
+}
+public ShoppingcartItem(String name, String pathname, float qty, float cp,
+		float total) {
+	super();
+	this.name = name;
+	this.pathname = pathname;
+	this.qty = qty;
+	this.cp = cp;
+	this.total = total;
+}
+
+}

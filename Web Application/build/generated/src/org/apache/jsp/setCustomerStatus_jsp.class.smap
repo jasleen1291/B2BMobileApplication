@@ -1,0 +1,13 @@
+SMAP
+setCustomerStatus_jsp.java
+JSP
+*S JSP
+*F
++ 0 setCustomerStatus.jsp
+setCustomerStatus.jsp
+*L
+6,2:49
+12,8:51
+19,29:58
+47,4:87
+*E

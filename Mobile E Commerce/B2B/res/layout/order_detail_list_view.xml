@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+   android:background="@drawable/textview_border"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/qty"
+        android:background="@drawable/textview_border"
+        android:layout_width="0dp"
+        android:textIsSelectable="false"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:id="@+id/cost"
+        android:background="@drawable/textview_border"
+        android:layout_width="0dp"
+        android:textIsSelectable="false"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        />
+
+    <TextView
+        android:id="@+id/discount"
+        android:background="@drawable/textview_border"
+        android:textIsSelectable="false"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+         />
+
+    <TextView
+        android:textIsSelectable="false"
+        android:background="@drawable/textview_border"
+        android:id="@+id/shipping"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+       />
+
+    <TextView
+        android:textIsSelectable="false"
+        android:background="@drawable/textview_border"
+        android:id="@+id/sp"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+         />
+
+</LinearLayout>

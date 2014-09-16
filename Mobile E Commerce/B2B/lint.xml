@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <issue id="DefaultLocale" severity="ignore">
+        <ignore path="src/com/jc/b2b/AddCategory.java" />
+    </issue>
+    <issue id="InnerclassSeparator" severity="ignore" />
+</lint>

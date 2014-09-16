@@ -1,0 +1,37 @@
+package com.jc.b2b;
+
+import java.util.ArrayList;
+
+import com.jc.b2b.utils.ChildItem;
+
+import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.widget.ListView;
+
+public class CustomerArea extends FragmentActivity {
+ListView lv;
+android.support.v4.app.FragmentTransaction fragmentTransaction;
+android.support.v4.app.FragmentManager fm;
+ArrayList<ChildItem> ab=new ArrayList<ChildItem>();
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_customer_area);
+
+		fm = getSupportFragmentManager();
+		fragmentTransaction = fm.beginTransaction();
+		ab.add(new ChildItem(new CustomerHome(), "Search Item"));
+		ab.add(new ChildItem(new MyShoppingCart(), "Shopping Cart"));
+		ab.add(new ChildItem(new MySavedItems(),"My Saved Items"));
+		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.customer_area, menu);
+		return true;
+	}
+
+}

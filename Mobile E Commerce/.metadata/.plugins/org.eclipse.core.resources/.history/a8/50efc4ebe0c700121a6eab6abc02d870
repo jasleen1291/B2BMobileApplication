@@ -1,0 +1,346 @@
+package com.jc.b2b;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+
+import com.jc.b2b.utils.B2BUtils;
+import com.jc.b2b.utils.ShoppingcartItem;
+import com.paypal.android.MEP.CheckoutButton;
+import com.paypal.android.MEP.PayPal;
+import com.paypal.android.MEP.PayPalActivity;
+import com.paypal.android.MEP.PayPalInvoiceData;
+import com.paypal.android.MEP.PayPalInvoiceItem;
+import com.paypal.android.MEP.PayPalPayment;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.OnClickListener;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+/**
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * 
+ */
+public class MyShoppingCart extends Fragment {
+	float qtyf = 0.0f, totalf = 0.0f;
+	TextView total1,qty1;
+	Orderadapter od;
+	ArrayList<ShoppingcartItem> items;
+	ListView lv;
+	protected static final int INITIALIZE_SUCCESS = 0;
+	protected static final int INITIALIZE_FAILURE = 1;
+	RelativeLayout rl;
+	private static final int server = PayPal.ENV_NONE;
+	// The ID of your application that you received from PayPal
+	private static final String appID = "APP-80W284485P519543T";
+	CheckoutButton launchSimplePayment;
+	Handler hRefresh = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case INITIALIZE_SUCCESS: {
+				setupButtons();
+			}
+				break;
+			case INITIALIZE_FAILURE:
+				System.out.println("make pa2");
+				break;
+			}
+		}
+
+	};
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		
+
+		Thread libraryInitializationThread = new Thread() {
+			public void run() {
+				initLibrary();
+
+				// The library is initialized so let's create our CheckoutButton
+				// and update the UI.
+				if (PayPal.getInstance().isLibraryInitialized()) {
+					hRefresh.sendEmptyMessage(INITIALIZE_SUCCESS);
+				} else {
+					hRefresh.sendEmptyMessage(INITIALIZE_FAILURE);
+				}
+			}
+		};
+		libraryInitializationThread.start();
+		super.onCreate(savedInstanceState);
+	}
+	private void setupButtons() {
+		// TODO Auto-generated method stub
+		System.out.println("make pa");
+		PayPal pp = PayPal.getInstance();
+		launchSimplePayment = pp.getCheckoutButton(getActivity(),
+				PayPal.BUTTON_194x37, CheckoutButton.TEXT_PAY);
+		// You'll need to have an OnClickListener for the CheckoutButton. For
+		// this application, MPL_Example implements OnClickListener and we
+		// have the onClick() method below.
+		launchSimplePayment.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View v) {
+				
+				PayPalPayment payment = new PayPalPayment();
+				  // Sets the currency type for this payment.
+				     payment.setCurrencyType("USD");
+				     // Sets the recipient for the payment. This can also be a phone number.
+				     payment.setRecipient("example-merchant-1@paypal.com");
+				     // Sets the amount of the payment, not including tax and shipping amounts.
+				     payment.setSubtotal(new BigDecimal("8.25"));
+				     // Sets the payment type. This can be PAYMENT_TYPE_GOODS, PAYMENT_TYPE_SERVICE, PAYMENT_TYPE_PERSONAL, or PAYMENT_TYPE_NONE.
+				     payment.setPaymentType(PayPal.PAYMENT_TYPE_GOODS);
+				     
+				     // PayPalInvoiceData can contain tax and shipping amounts. It also contains an ArrayList of PayPalInvoiceItem which can
+				     // be filled out. These are not required for any transaction.
+				     PayPalInvoiceData invoice = new PayPalInvoiceData();
+				     // Sets the tax amount.
+				     invoice.setTax(new BigDecimal("1.25"));
+				     // Sets the shipping amount.
+				     invoice.setShipping(new BigDecimal("4.50"));
+				     
+				     // PayPalInvoiceItem has several parameters available to it. None of these parameters is required.
+				     PayPalInvoiceItem item1 = new PayPalInvoiceItem();
+				     // Sets the name of the item.
+				     item1.setName("Pink Stuffed Bunny");
+				     // Sets the ID. This is any ID that you would like to have associated with the item.
+				     item1.setID("87239");
+				     // Sets the total price which should be (quantity * unit price). The total prices of all PayPalInvoiceItem should add up
+				     // to less than or equal the subtotal of the payment.
+				     item1.setTotalPrice(new BigDecimal("6.00"));
+				     // Sets the unit price.
+				     item1.setUnitPrice(new BigDecimal("2.00"));
+				     // Sets the quantity.
+				     item1.setQuantity(3);
+				     // Add the PayPalInvoiceItem to the PayPalInvoiceData. Alternatively, you can create an ArrayList
+				     // and pass it to the PayPalInvoiceData function setInvoiceItems().
+				     invoice.getInvoiceItems().add(item1);
+				     
+				     // Create and add another PayPalInvoiceItem to add to the PayPalInvoiceData.
+				     PayPalInvoiceItem item2 = new PayPalInvoiceItem();
+				     item2.setName("Well Wishes");
+				     item2.setID("56691");
+				     item2.setTotalPrice(new BigDecimal("2.25"));
+				     item2.setUnitPrice(new BigDecimal("0.25"));
+				     item2.setQuantity(9);
+				     invoice.getInvoiceItems().add(item2);
+				     
+				     // Sets the PayPalPayment invoice data.
+				     payment.setInvoiceData(invoice);
+				     // Sets the merchant name. This is the name of your Application or Company.
+				     payment.setMerchantName("The Gift Store");
+				     // Sets the description of the payment.
+				     payment.setDescription("Quite a simple payment");
+				     // Sets the Custom ID. This is any ID that you would like to have associated with the payment.
+				     payment.setCustomID("8873482296");
+				     // Sets the Instant Payment Notification url. This url will be hit by the PayPal server upon completion of the payment.
+				     payment.setIpnUrl("http://www.exampleapp.com/ipn");
+				     // Sets the memo. This memo will be part of the notification sent by PayPal to the necessary parties.
+				     payment.setMemo("Hi! I'm making a memo for a simple payment.");
+					// Use checkout to create our Intent.
+					Intent checkoutIntent = PayPal.getInstance().checkout(
+							payment, getActivity());
+					// Use the android's startActivityForResult() and pass in
+					// our Intent. This will start the library.
+					startActivityForResult(checkoutIntent, 1);
+				
+			}
+		});
+		// The CheckoutButton is an android LinearLayout so we can add it to our
+		// display like any other View.
+		rl.addView(launchSimplePayment);
+	}
+
+	private void initLibrary() {
+		PayPal pp = PayPal.getInstance();
+		// If the library is already initialized, then we don't need to
+		// initialize it again.
+		if (pp == null) {
+			// This is the main initialization call that takes in your Context,
+			// the Application ID, and the server you would like to connect to.
+			pp = PayPal.initWithAppID(getActivity(), appID, server);
+
+			// -- These are required settings.
+			pp.setLanguage("en_US"); // Sets the language for the library.
+			// --
+
+			// -- These are a few of the optional settings.
+			// Sets the fees payer. If there are fees for the transaction, this
+			// person will pay for them. Possible values are FEEPAYER_SENDER,
+			// FEEPAYER_PRIMARYRECEIVER, FEEPAYER_EACHRECEIVER, and
+			// FEEPAYER_SECONDARYONLY.
+			//pp.setFeesPayer(PayPal.FEEPAYER_EACHRECEIVER);
+			// Set to true if the transaction will require shipping.
+			//pp.setShippingEnabled(true);
+			// Dynamic Amount Calculation allows you to set tax and shipping
+			// amounts based on the user's shipping address. Shipping must be
+			// enabled for Dynamic Amount Calculation. This also requires you to
+			// create a class that implements PaymentAdjuster and Serializable.
+			pp.setDynamicAmountCalculationEnabled(false);
+			// --
+		}
+	}
+
+	public MyShoppingCart() {
+		// Required empty public constructor
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		items=new ArrayList<ShoppingcartItem>();
+		
+		items.addAll(B2BUtils.sitem);
+		View view = inflater.inflate(R.layout.fragment_my_shopping_cart, container,
+				false);
+		total1=(TextView)view.findViewById(R.id.total);
+		qty1=(TextView)view.findViewById(R.id.qty);
+		lv=(ListView)view.findViewById(R.id.listView1);
+		od=new Orderadapter();
+		lv.setAdapter(od);
+		return view;
+	}
+	class Orderadapter extends BaseAdapter {
+
+		
+		
+		public Orderadapter() {
+			super();
+			
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		public int getCount() {
+			// TODO Auto-generated method stub
+			return items.size();
+		}
+
+		@Override
+		public Object getItem(int arg0) {
+			// TODO Auto-generated method stub
+			return items.get(arg0);
+		}
+
+		@Override
+		public long getItemId(int arg0) {
+			// TODO Auto-generated method stub
+			return arg0;
+		}
+
+		@Override
+		public View getView(int arg0, View arg1, ViewGroup arg2) {
+			LayoutInflater infalInflater = (LayoutInflater) getActivity()
+					.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+			arg1 = infalInflater.inflate(R.layout.order_item, null);
+			arg1.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					TextView itemname = (TextView) v.findViewById(R.id.itemname);
+					int index = AlreadyIn(itemname.getText().toString());
+					ShoppingcartItem cart=items.get(index);
+					float qtya = (cart.getQty());
+					float cpa = cart.getCp();
+					float totals = qtya * cpa;
+					items.remove(index);
+					qtyf = qtyf - qtya;
+					totalf = totalf - totals;
+					
+					total1.setText(totals + "");
+					od.notifyDataSetChanged();
+					Toast.makeText(getActivity(), itemname.getText() , Toast.LENGTH_SHORT).show();
+					
+				}
+			});
+			ImageView iv = (ImageView) arg1.findViewById(R.id.imageView1);
+			iv.setImageBitmap(B2BUtils.imgs.get(
+					items.get(arg0).getPathname()));
+			TextView qty = (TextView) arg1.findViewById(R.id.totalitems);
+			qty.setText(items.get(arg0).getQty() + "");
+			qtyf=qtyf+items.get(arg0).getQty();
+			TextView itemname = (TextView) arg1.findViewById(R.id.itemname);
+			itemname.setText(items.get(arg0).getName());
+			TextView cp = (TextView) arg1.findViewById(R.id.cp);
+			cp.setText(items.get(arg0).getCp() + "");
+			TextView total = (TextView) arg1.findViewById(R.id.total);
+			total.setText(items.get(arg0).getTotal() + "");
+			totalf=totalf+items.get(arg0).getTotal();
+			total1.setText(totalf + "");
+			qty1.setText(qtyf+"");
+			return arg1;
+		}
+
+	}
+
+	int AlreadyIn(String name) {
+		if (items.size() == 0)
+			return -1;
+		else {
+			for (int i = 0; i < items.size(); i++) {
+				if (items.get(i).getName().equals(name)) {
+					return i;
+				}
+			}
+		}
+		return -1;
+	}
+	@SuppressWarnings("unused")
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		switch (resultCode) {
+		case Activity.RESULT_OK:
+			// The payment succeeded
+			String payKey = data.getStringExtra(PayPalActivity.EXTRA_PAY_KEY);
+			Toast.makeText(getActivity(), "Payment Confirmed",
+					Toast.LENGTH_SHORT).show();
+
+			break;
+		case Activity.RESULT_CANCELED:
+			// The payment was canceled
+			// Tell the user their payment was canceled
+			Toast.makeText(getActivity(), "Payment Cancelled",
+					Toast.LENGTH_SHORT).show();
+
+			break;
+		case PayPalActivity.RESULT_FAILURE:
+			// The payment failed -- we get the error from the EXTRA_ERROR_ID
+			// and EXTRA_ERROR_MESSAGE
+			String errorID = data.getStringExtra(PayPalActivity.EXTRA_ERROR_ID);
+			
+			System.out.println(errorID);
+			String errorMessage = data
+					.getStringExtra(PayPalActivity.EXTRA_ERROR_MESSAGE);
+			Toast.makeText(getActivity(),
+					"Payment failed due to" + errorMessage, Toast.LENGTH_SHORT)
+					.show();
+
+			break;
+		}
+	}
+
+	@Override
+	public void onResume() {
+		if (launchSimplePayment != null
+				&& (launchSimplePayment instanceof CheckoutButton))
+			launchSimplePayment.updateButton();
+		System.out.println("reumes");
+		super.onResume();
+	}
+}

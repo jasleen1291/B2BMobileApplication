@@ -1,0 +1,307 @@
+package com.jc.b2b;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+
+import org.json.JSONObject;
+
+import android.app.Dialog;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Environment;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.GridView;
+import android.widget.LinearLayout;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.jc.b2b.utils.AdvertisementPrice;
+import com.jc.b2b.utils.B2BUtils;
+import com.jc.b2b.utils.ButtonAdapter;
+import com.jc.b2b.utils.ColorPicker;
+import com.jc.b2b.utils.GradientColor;
+import com.jc.b2b.utils.Gradients;
+
+public class BuyAdvertisement extends Fragment {
+	Spinner spinner1, spinner2;
+	GradientColor gd;
+	TextView cost, days;
+	EditText title, desc;
+	LinearLayout ll;
+	Button button1, textView8, button2;
+	ArrayList<String> groupItems = new ArrayList<String>();
+	ArrayList<String> descItems = new ArrayList<String>();
+	ArrayList<String> costItems = new ArrayList<String>();
+	ArrayList<String> daysItems = new ArrayList<String>();
+	ArrayAdapter<String> cat, cat2;
+	View view1;
+	int textcolor = 0;
+	ArrayList<ArrayList<AdvertisementPrice>> childItems = new ArrayList<ArrayList<AdvertisementPrice>>();
+
+	public BuyAdvertisement() {
+		// Required empty public constructor
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		cat = new ArrayAdapter<String>(getActivity(),
+				android.R.layout.simple_spinner_item, groupItems);
+		cat.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		cat2 = new ArrayAdapter<String>(getActivity(),
+				android.R.layout.simple_spinner_item, descItems);
+		cat2.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
+		new FetchData().execute("");
+		View view = inflater.inflate(R.layout.fragment_buy_advertisement,
+				container, false);
+		spinner1 = (Spinner) view.findViewById(R.id.spinner1);
+		spinner1.setAdapter(cat);
+		view1 = (View) view.findViewById(R.id.view);
+		spinner2 = (Spinner) view.findViewById(R.id.spinner2);
+		title = (EditText) view.findViewById(R.id.editText2);
+		desc = (EditText) view.findViewById(R.id.editText1);
+		spinner2.setAdapter(cat2);
+		spinner1.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				desc(childItems.get(arg2));
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+		cost = (TextView) view.findViewById(R.id.cost);
+		days = (TextView) view.findViewById(R.id.days);
+		button1 = (Button) view.findViewById(R.id.button1);
+		button1.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				final Dialog dialog = new Dialog(getActivity());
+				LayoutInflater inflater = (LayoutInflater) getActivity()
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View vds = inflater.inflate(R.layout.grid_buttons, null);
+				dialog.setTitle("Pick a background");
+				dialog.setContentView(vds);
+				GridView gv = (GridView) vds.findViewById(R.id.gvButtons);
+				gv.setAdapter(new ButtonAdapter(getActivity()));
+				gv.setOnItemClickListener(new OnItemClickListener() {
+
+					@SuppressWarnings("deprecation")
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						// System.out.println("yo");
+						Integer position = (Integer) arg1.getTag();
+						gd = Gradients.AllGradients().get(position);
+						Drawable d = Gradients.NewGradient(gd);
+						// Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+						view1.setBackgroundDrawable((d));
+						button1.setBackgroundDrawable(d);
+						dialog.dismiss();
+						// view1.setVisibility(View.VISIBLE);
+					}
+				});
+
+				dialog.show();
+
+			}
+		});
+		button2 = (Button) view.findViewById(R.id.button2);
+		button2.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				final Dialog dialog = new Dialog(getActivity());
+				LayoutInflater inflater = (LayoutInflater) getActivity()
+						.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				View vds = inflater.inflate(R.layout.grid_buttons, null);
+				dialog.setTitle("Pick a Text Color");
+				dialog.setContentView(vds);
+				GridView gv = (GridView) vds.findViewById(R.id.gvButtons);
+				gv.setAdapter(new ColorPicker(getActivity()));
+				gv.setOnItemClickListener(new OnItemClickListener() {
+
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						System.out.println("yo");
+						textcolor = Gradients.getColors().get(arg2);
+						button2.setBackgroundColor(Gradients.getColors().get(
+								arg2));
+						dialog.dismiss();
+						// view1.setVisibility(View.VISIBLE);
+					}
+				});
+
+				dialog.show();
+
+			} // TODO Auto-generated method stub
+
+		});
+
+		textView8 = (Button) view.findViewById(R.id.textView8);
+		textView8.setOnClickListener(new OnClickListener() {
+
+			@SuppressWarnings("deprecation")
+			@Override
+			public void onClick(View arg0) {
+				if (title.getText().length() < 1) {
+					title.setError("Title cannot be empty");
+				} else if (desc.getText().length() < 1) {
+					desc.setError("Description cannot be empty");
+				} else {
+					final Dialog dialog = new Dialog(getActivity());
+					LayoutInflater inflater = (LayoutInflater) getActivity()
+							.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+					view1 = inflater.inflate(R.layout.advertisement, null);
+					view1.setMinimumHeight(600);
+					view1.setMinimumWidth(800);
+					dialog.setContentView(view1);
+					dialog.setTitle("Advertisement");
+
+					Drawable d = Gradients.NewGradient(gd);
+					view1.setVisibility(View.VISIBLE);
+					ll = (LinearLayout) view1.findViewById(R.id.advertisement);
+					ll.setBackgroundDrawable(d);
+
+					TextView ti = (TextView) view1.findViewById(R.id.textView1);
+					ti.setText(title.getText().toString());
+					ti.setTextColor(gd.getTextColor());
+					TextView de = (TextView) view1.findViewById(R.id.textView2);
+					de.setText(desc.getText().toString());
+					de.setTextColor(textcolor);
+					// System.out.println(textcolor);
+					Button update = (Button) view1.findViewById(R.id.button1);
+					update.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View v) {
+							// TODO Auto-generated method stub
+							try {
+								ll.setDrawingCacheEnabled(true);
+								Bitmap b = ll.getDrawingCache();
+								b.compress(
+										CompressFormat.JPEG,
+										95,
+										new FileOutputStream(
+												Environment
+														.getExternalStoragePublicDirectory(
+																Environment.DIRECTORY_PICTURES)
+														.getPath()
+														+ File.separator
+														+ "image.jpg"));
+								dialog.dismiss();
+							} catch (Exception e) {
+								System.out.println(e);
+							}
+						}
+					});
+					Button cancel = (Button) view1.findViewById(R.id.button2);
+					cancel.setOnClickListener(new OnClickListener() {
+
+						@Override
+						public void onClick(View arg0) {
+							dialog.dismiss();
+
+						}
+					});
+					dialog.show();
+					view1.setVisibility(View.VISIBLE);
+
+				}
+
+			}
+		});
+		return view;
+	}
+
+	void desc(ArrayList<AdvertisementPrice> child) {
+		descItems.clear();
+		costItems.clear();
+		daysItems.clear();
+		for (int i = 0; i < child.size(); i++) {
+			descItems.add(child.get(i).getDesc());
+			costItems.add(child.get(i).getCost());
+			daysItems.add(child.get(i).getDays());
+		}
+		cost.setText(costItems.get(0));
+		days.setText(daysItems.get(0));
+		cat2.notifyDataSetChanged();
+	}
+
+	class FetchData extends AsyncTask<String, String, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			JSONObject ob = B2BUtils
+					.getJSOn("http://10.0.2.2:8080/B2B/pricing.jsp?opt=select&t=advertisement");
+			Log.d("Object", ob.length() + "");
+			groupItems.addAll(B2BUtils.zerolevelcategories.values());
+			Log.d("Group", groupItems.size() + "");
+			for (int j = 0; j < groupItems.size(); j++) {
+				childItems.add(new ArrayList<AdvertisementPrice>());
+			}
+			try {
+				JSONObject t = ob.getJSONObject(B2BUtils.getUser()
+						.getUsertype());
+				if (t.length() > 0) {
+
+					Iterator<?> tr = t.keys();
+
+					while (tr.hasNext()) {
+						String id = tr.next().toString();
+						JSONObject temp = t.getJSONObject(id);
+
+						AdvertisementPrice a = (new AdvertisementPrice(
+								temp.getString("category"),
+								temp.getString("cost"), temp.getString("days"),
+								temp.getString("desc"), "Supplier", id));
+						int index = groupItems.indexOf(temp
+								.getString("category"));
+						childItems.get(index).add(a);
+						System.out.println(temp.getString("category")
+								+ childItems.get(index).size() + index);
+					}
+
+				}
+			} catch (Exception e) {
+				Log.d("Error", e.toString());
+			}
+
+			return null;
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			cat.notifyDataSetChanged();
+			desc(childItems.get(0));
+
+			super.onPostExecute(result);
+		}
+
+	}
+}

@@ -1,0 +1,37 @@
+package com.jc.b2b;
+
+import java.util.ArrayList;
+
+import com.jc.b2b.utils.Items;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ListView;
+
+/**
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * 
+ */
+public class MySavedItems extends Fragment {
+
+	public MySavedItems() {
+		// Required empty public constructor
+	}
+ListView lv;
+ArrayList<String> ids=new ArrayList<String>();
+ArrayList<Items> items;
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		ids.clear();
+		items=new ArrayList<Items>();
+		View view= inflater.inflate(R.layout.fragment_my_saved_items, container,
+				false);
+		lv=(ListView)view.findViewById(R.id.listView1);
+		return view;
+	}
+
+}

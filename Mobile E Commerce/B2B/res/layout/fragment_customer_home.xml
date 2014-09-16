@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".Subscribe_new_items" >
+
+    <!-- TODO: Update blank fragment layout -->
+<FrameLayout   style="@style/titlebarstyle">
+    <TextView
+        style="@style/titlebarstyle"
+        android:text="@string/subscribe_items" />
+    <EditText 
+        android:layout_width="wrap_content"
+        android:id="@+id/search"
+        android:hint="@android:string/search_go"
+        android:layout_gravity="right"
+        android:layout_height="match_parent"/>
+</FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:baselineAligned="false" >
+
+        <ListView
+            android:id="@+id/listView1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="3" >
+        </ListView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="7"
+            android:orientation="vertical" >
+
+            <ViewFlipper
+                android:id="@+id/viewFlipper1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="top|center_vertical"
+                android:flipInterval="3000"
+                android:inAnimation="@anim/slide_in_right"
+                android:outAnimation="@anim/slide_out_left" >
+            </ViewFlipper>
+
+            <ListView
+                android:id="@+id/listView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+               
+                >
+            </ListView>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

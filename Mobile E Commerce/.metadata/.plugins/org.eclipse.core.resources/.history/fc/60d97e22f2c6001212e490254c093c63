@@ -1,0 +1,256 @@
+package com.jc.b2b;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Collections;
+import java.util.Iterator;
+
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.StringBody;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+
+import com.jc.b2b.utils.B2BUtils;
+import com.jc.b2b.utils.Uploader;
+
+/**
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * 
+ */
+public class AddNewItem extends Fragment {
+	 private static ProgressDialog pd;
+	 File file;
+	 String url="http://10.0.2.2:8080/B2B/item.jsp";
+	 MultipartEntity entity;
+	 EditText itemname,longdesc,qty,unit,sp,cp,minorder,discount;
+	 ImageView image;
+	 Button btn,btn2,btn3;
+	 static Activity activity=null;
+	 private static int RESULT_LOAD_IMAGE = 1;
+	public AddNewItem() {
+		// Required empty public constructor
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+		activity=getActivity();
+		
+		View view= inflater.inflate(R.layout.fragment_add_new_item, container,
+				false);
+		sp=(EditText)view.findViewById(R.id.sp);
+		cp=(EditText)view.findViewById(R.id.cp);
+		minorder=(EditText)view.findViewById(R.id.minorder);
+		discount=(EditText)view.findViewById(R.id.discount);
+		itemname=(EditText)view.findViewById(R.id.itemname);
+		longdesc=(EditText)view.findViewById(R.id.longdescription);
+		qty=(EditText)view.findViewById(R.id.qtyperunit);
+		unit=(EditText)view.findViewById(R.id.unit_of_measurement);
+		image=(ImageView)view.findViewById(R.id.imageView1);
+		entity=new MultipartEntity();
+		image.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				 Intent i = new Intent(
+	                        Intent.ACTION_PICK,
+	                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+	                 
+	                startActivityForResult(i, RESULT_LOAD_IMAGE);
+				
+			}
+		});
+		Button btn2=(Button)view.findViewById(R.id.submit);
+		btn=(Button)view.findViewById(R.id.button);
+		btn2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				 pd = ProgressDialog.show(getActivity(), "Working..", "Uploading Item", true,
+                         false);
+				 try
+					{
+					entity.addPart("itemname",new StringBody( itemname.getText().toString()));
+					entity.addPart("longdescription", new StringBody( longdesc.getText().toString()));
+					entity.addPart("categoryid", new StringBody(B2BUtils.categoryId.get(B2BUtils.categoryNames.indexOf(btn.getText().toString().trim().toUpperCase()))));
+					entity.addPart("qtyperunit", new StringBody(qty.getText().toString()));
+					entity.addPart("unit_of_measure", new StringBody(unit.getText().toString()));
+					entity.addPart("ownerid", new StringBody(B2BUtils.getUser().getMasterid()));
+					entity.addPart("sp", new StringBody(sp.getText().toString()));
+					entity.addPart("cp", new StringBody(cp.getText().toString()));
+					entity.addPart("minorder", new StringBody(minorder.getText().toString()));
+					entity.addPart("discount", new StringBody(discount.getText().toString()));
+					entity.addPart("shopid", new StringBody(B2BUtils.shop.getIdshop()));
+					entity.addPart("sellertype", new StringBody(B2BUtils.user.getUsertype()));
+					entity.addPart("supplier", new StringBody("-1"));
+					Thread t=new Uploader(file, url, handler, entity);
+					t.start();
+					}
+					catch(Exception e)
+					{
+						Log.d("Error", e.toString());
+					}
+				
+				
+			}
+		});
+btn.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				
+				showEditDialog();
+			}
+		});
+			btn2=(Button)view.findViewById(R.id.button1);
+			btn2.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View arg0) {
+					// TODO Auto-generated method stub
+					
+				}
+			});
+		return view;
+	}
+	private static Handler handler = new Handler() {
+		
+        @Override
+        public void handleMessage(Message msg) {
+                pd.dismiss();
+                //tv.setText(pi_string);
+             
+
+        }	
+};
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+ 
+            Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+ 
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+             
+            
+            image.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+         file=new File(picturePath);
+        }
+			super.onActivityResult(requestCode, resultCode, data);
+	}
+	protected void showEditDialog() {
+		SelectCategory editNameDialog = new SelectCategory();
+		editNameDialog.show(getFragmentManager(), "dialog");
+		
+	}
+	private BroadcastReceiver myReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			//intent.putExtra("Selction", inputText);
+			//intent.putExtra("id", id);
+			//id=intent.getStringExtra("id");
+			btn.setText(intent.getStringExtra("Selction"));
+			
+		}
+	};
+	@Override
+	public void onResume() {
+	    super.onResume();
+	    
+	        IntentFilter filter = new IntentFilter(B2BUtils.CATEGORY_INTENT );
+	        getActivity().getApplicationContext().registerReceiver(myReceiver, filter);
+	    
+	}
+	class FetchCountries extends AsyncTask<String, String, String>
+	{
+
+		ProgressDialog progress;
+		Context context;
+		public FetchCountries(Activity activity) {
+			super();
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			if (progress.isShowing()) {
+				progress.dismiss();
+			}
+			countryAdapter.notifyDataSetChanged();
+			super.onPostExecute(result);
+		}
+
+		@Override
+		protected void onPreExecute() {
+			progress=new ProgressDialog(getActivity());
+			progress.setTitle("Fetching Countries Please wait...");
+			progress.show();
+			
+			super.onPreExecute();
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			
+			try
+			{
+			 URL oracle = new URL("http://10.0.2.2:8080/B2B/getCountryList.jsp");
+			 
+		        BufferedReader in = new BufferedReader(
+		        new InputStreamReader(oracle.openStream()));
+		       
+		        String inputLine,result="";
+		        while ((inputLine = in.readLine()) != null)
+		            result=result+inputLine;
+		        in.close();
+		        JSONObject countryJSON=new JSONObject(result);
+		        Iterator<?> it=countryJSON.keys();
+		        while(it.hasNext())
+		        {
+		        	String key=it.next().toString();
+		        	String value=countryJSON.get(key).toString();
+		        	B2BUtils.country.put(value,key);
+		        	countryList.add(value);
+		        	}
+		       Collections.sort(countryList);
+			}
+			catch(Exception e)
+			{
+				Log.d(B2BUtils.LogString,e.toString());
+			}
+			return null;
+		}
+
+	}
+	
+}

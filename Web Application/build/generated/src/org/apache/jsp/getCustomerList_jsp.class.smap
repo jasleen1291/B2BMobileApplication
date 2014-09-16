@@ -1,0 +1,12 @@
+SMAP
+getCustomerList_jsp.java
+JSP
+*S JSP
+*F
++ 0 getCustomerList.jsp
+getCustomerList.jsp
+*L
+5,8:48
+12,30:55
+41,2:85
+*E

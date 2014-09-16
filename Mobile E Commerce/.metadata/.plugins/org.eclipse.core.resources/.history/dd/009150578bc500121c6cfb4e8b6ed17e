@@ -1,0 +1,7 @@
+package com.jc.b2b.utils;
+
+public class OrderDetails {
+String qty,cost,discount,afterdiscount,itemid,shipmentcost;
+
+
+}

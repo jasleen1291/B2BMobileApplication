@@ -1,0 +1,505 @@
+package com.jc.b2b;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.TextView;
+
+import com.jc.b2b.utils.B2BUtils;
+import com.jc.b2b.utils.Category;
+import com.jc.b2b.utils.ChildItem;
+import com.jc.b2b.utils.Items;
+import com.jc.b2b.utils.Shop;
+
+public class Supplier_area extends FragmentActivity {
+	int mStackLevel = 0;
+	List<String> groupItems;
+	List<List<ChildItem>> childItems;
+	ExpandableListView el;
+	HashMap<String, Bitmap> items;
+	android.support.v4.app.FragmentTransaction fragmentTransaction;
+	android.support.v4.app.FragmentManager fm;
+	Shop shop;
+	public static FetchShopInfo fetch;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_supplier_area);
+		fetch=(FetchShopInfo) new FetchShopInfo().execute("");
+		groupItems = new ArrayList<String>();
+		childItems = new ArrayList<List<ChildItem>>();
+
+		fm = getSupportFragmentManager();
+		fragmentTransaction = fm.beginTransaction();
+
+		
+		
+		// Customers
+		groupItems.add("Customers");
+		List<ChildItem> Customers = new ArrayList<ChildItem>();
+		Customers.add(new ChildItem(new ViewCustomerList(), "List Customers"));
+
+		childItems.add(Customers);
+		// Advertisement Pricing
+		groupItems.add("Buy Advertisement");
+		List<ChildItem> Advertisementpricing = new ArrayList<ChildItem>();
+		Advertisementpricing.add(new ChildItem(new BuyAdvertisement(), "Add"));
+		Advertisementpricing.add(new ChildItem(new ModifyAdvertisement(),
+				"Modify"));
+		childItems.add(Advertisementpricing);
+		// Category
+		groupItems.add("Category");
+		List<ChildItem> Category = new ArrayList<ChildItem>();
+		Category.add(new ChildItem(new EditMyCategories(), "Edit My Categories"));
+		Category.add(new ChildItem(new AddSubCategorySupplier(),"Add Sub Category"));
+		childItems.add(Category);
+		// Items
+		groupItems.add("Items");
+		List<ChildItem> Items = new ArrayList<ChildItem>();
+		Items.add(new ChildItem(new AddNewItem(), "Add New Item"));
+		Items.add(new ChildItem(new ViewItemList(), "View Items"));
+		Items.add(new ChildItem(new DeactivatedItems(), "Deactivated Items"));
+		childItems.add(Items);
+		groupItems.add("Warehouse");
+		List<ChildItem> warehouse = new ArrayList<ChildItem>();
+		warehouse.add(new ChildItem(new AddWarehouse(), "Add New Warehouse"));
+		childItems.add(warehouse);
+		el = (ExpandableListView) findViewById(R.id.adminTask);
+		el.setClickable(false);
+		el.setOnChildClickListener(new OnChildClickListener() {
+
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+				try {
+					Fragment ab = childItems.get(groupPosition)
+							.get(childPosition).getA();
+					fragmentTransaction = fm.beginTransaction();
+					fragmentTransaction.replace(R.id.myfragment, ab, childItems
+							.get(groupPosition).get(childPosition).getB());
+					Log.d("sd", childItems.get(groupPosition)
+							.get(childPosition).getB());
+					fragmentTransaction.commit();
+				} catch (Exception e) {
+					Log.d(B2BUtils.LogString, e.toString());
+				}
+				return true;
+			}
+		});
+		el.setAdapter(new MyAadpter());
+
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.supplier_area, menu);
+		return true;
+	}
+
+	public class FetchShopInfo extends AsyncTask<String, String, String> {
+
+		public FetchShopInfo() {
+			super();
+			// TODO Auto-generated constructor stub
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// add a fragment
+			SupplierHome myFragment = new SupplierHome();
+			fragmentTransaction.add(R.id.myfragment, myFragment);
+			fragmentTransaction.commit();
+			super.onPostExecute(result);
+		}
+
+		@Override
+		protected String doInBackground(String... params) {
+			JSONArray array = B2BUtils
+					.getJSOnArr("http://10.0.2.2:8080/B2B/shop.jsp?opt=myshops&id="
+							+ B2BUtils.getUser().getMasterid());
+			if (array.length() < 1) {
+				startActivity(new Intent(Supplier_area.this,
+						FirstTimeLogin.class));
+			} else {
+				try {
+					JSONObject ob = array.getJSONObject(0);
+					items=new HashMap<String, Bitmap>();
+					ArrayList<Category> mycategories=new ArrayList<Category>();
+					JSONArray categories=ob.getJSONArray("categories");
+					{
+						if(categories.length()<1)
+						{
+							
+						}
+						else
+						{
+							for(int i=0;i<categories.length();i++)
+							{
+								JSONObject ac=categories.getJSONObject(i);
+					            //System.out.println(ac.getString("name")+10);
+								Category cat=new Category(ac.getString("id"), ac.getString("name"),new ArrayList<Items>());
+					            JSONArray db=ac.getJSONArray("children");
+					            if(db.length()>0)
+					            {
+					            	cat.setChildren(myChildren(db));
+					            }
+					            mycategories.add(cat);
+					            
+							}
+							Log.d("Length", mycategories.size()+"");
+						}
+					}
+					Log.d("Size", mycategories.size()+"");
+					ArrayList<Items> children = new ArrayList<Items>();
+					JSONArray ard = ob.getJSONArray("children");
+					for (int i = 0; i < ard.length(); i++) {
+						JSONObject child = ard.getJSONObject(i);
+						JSONArray batch = child.getJSONArray("batch");
+						ArrayList<String> qty, discounts, ids;
+						qty = new ArrayList<String>();
+						discounts = new ArrayList<String>();
+						ids = new ArrayList<String>();
+						if (batch.length() > 0) {
+							for (int i1 = 0; i1 < batch.length(); i1++) {
+								try {
+									JSONObject btch = batch.getJSONObject(i1);
+									qty.add(btch.getString("qty"));
+									discounts.add(btch.getString("discount"));
+									ids.add(btch.getString("id"));
+								} catch (Exception e) {
+									Log.d("Erroe", e.toString());
+								}
+							}
+						}
+						Intent ic = new Intent(getApplicationContext(),
+								FetchImage.class);
+						ic.putExtra("url", "http://10.0.2.2:8080/B2B/images/"
+								+ child.getString("imagepath"));
+						ic.putExtra("imagename", child.getString("itemname"));
+						startService(ic);
+						Items current=(new Items(child.getString("categoryid"),
+								child.getString("status"), child
+										.getString("imagepath"), child
+										.getString("itemname"), child
+										.getString("unit_of_measurement"),
+								child.getString("qtyperunit"), child
+										.getString("owner"), child
+										.getString("longdesciption"), child
+										.getString("iditem"), child
+										.getString("sp"), child
+										.getString("unitcost"), child
+										.getString("min_order"), child
+										.getString("item_shopid"), child
+										.getString("discount"), child
+										.getString("qtyonorder"), qty,
+								discounts, ids, child.getString("qtyperunit")));
+						
+						if(getCategory(mycategories,child.getString("categoryid"))!=null)
+						{
+							getCategory(mycategories,child.getString("categoryid")).add(current);
+						}
+						children.add(current);
+
+					}
+					ArrayList<Items> available=new ArrayList<Items>();
+					JSONArray ard2 = ob.getJSONArray("available");
+					for(int i2=0;i2<ard2.length();i2++)
+					{
+						JSONObject child=ard2.getJSONObject(i2);
+						Items current=(new Items(child.getString("categoryid"),
+								child.getString("status"), child
+								.getString("imagepath"), child
+								.getString("itemname"), child
+								.getString("unit_of_measurement"),
+						child.getString("qtyperunit"), child
+								.getString("owner"), child
+								.getString("longdesciption"), child
+								.getString("iditem")));
+						available.add(current);
+						Intent ic = new Intent(getApplicationContext(),
+								FetchImage.class);
+						ic.putExtra("url", "http://10.0.2.2:8080/B2B/images/"
+								+ child.getString("imagepath"));
+						ic.putExtra("imagename", child.getString("itemname"));
+						startService(ic);
+						if(getCategory(mycategories,child.getString("categoryid"))!=null)
+						{
+							getCategory(mycategories,child.getString("categoryid")).add(current);
+						}
+					}
+					
+					shop=new Shop(ob.getString("status"),ob.getString("description"), ob.getString("categoriesallowed"), ob.getString("ShopName"), ob.getString("expirydate"), ob.getString("idshop"), ob.getString("paymentemail"), children, available, items, mycategories);
+					B2BUtils.shop=shop;
+					Log.d("d", B2BUtils.shop.getImgs().size()+"");
+					el.setClickable(true);
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+			}
+			return null;
+		}
+
+	}
+
+	class MyAadpter extends BaseExpandableListAdapter {
+
+		@Override
+		public Object getChild(int groupPosition, int childPosition) {
+			// TODO Auto-generated method stub
+			return childItems.get(groupPosition).get(childPosition);
+		}
+
+		@Override
+		public long getChildId(int groupPosition, int childPosition) {
+			// TODO Auto-generated method stub
+			return childPosition;
+		}
+
+		@Override
+		public View getChildView(int groupPosition, int childPosition,
+				boolean isLastChild, View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				LayoutInflater infalInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+				convertView = infalInflater
+						.inflate(R.layout.child_layout, null);
+			}
+			TextView tv = (TextView) convertView.findViewById(R.id.child);
+			tv.setText(Html.fromHtml("&#8226; "
+					+ childItems.get(groupPosition).get(childPosition).getB()));
+			return convertView;
+
+		}
+
+		@Override
+		public int getChildrenCount(int groupPosition) {
+			// TODO Auto-generated method stub
+			return childItems.get(groupPosition).size();
+		}
+
+		@Override
+		public Object getGroup(int groupPosition) {
+			// TODO Auto-generated method stub
+			return groupItems.get(groupPosition);
+		}
+
+		@Override
+		public int getGroupCount() {
+			// TODO Auto-generated method stub
+			return groupItems.size();
+		}
+
+		@Override
+		public long getGroupId(int groupPosition) {
+			// TODO Auto-generated method stub
+			return groupPosition;
+		}
+
+		@Override
+		public View getGroupView(int groupPosition, boolean isExpanded,
+				View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				LayoutInflater infalInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+				convertView = infalInflater
+						.inflate(R.layout.group_layout, null);
+			}
+			TextView tv = (TextView) convertView.findViewById(R.id.group);
+			tv.setText(groupItems.get(groupPosition));
+			return convertView;
+		}
+
+		@Override
+		public boolean hasStableIds() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+		@Override
+		public boolean isChildSelectable(int groupPosition, int childPosition) {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+	}
+
+	private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+		@Override
+		public void onReceive(Context context, Intent intent) {
+			// Extract data included in the Intent
+			String message = intent.getStringExtra("imagepath");
+			String picture = intent.getStringExtra("picture");
+			if (B2BUtils.shop!= null) {
+				if (B2BUtils.shop.getImgs().containsKey(picture)) {
+					B2BUtils.shop.getImgs().putAll(items);
+				} else {
+					
+					B2BUtils.shop.getImgs().put(picture, decodeSampledBitmapFromResource(message, 100, 100));
+					//B2BUtils.shop.getImgs().putAll(items);
+					if(B2BUtils.shop!=null)
+					{
+						Log.d("null", "hell");
+						B2BUtils.shop.getImgs().putAll(items);
+					}
+					else
+					{
+						Log.d("wtf", "wf");
+					}
+				}
+			}
+			else
+			{
+				items.put(picture, decodeSampledBitmapFromResource(message, 100, 100));
+			}
+			Log.d("Imagereceived", picture);
+		}
+	};
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		// Register mMessageReceiver to receive messages.
+		registerReceiver(
+				mMessageReceiver, new IntentFilter(B2BUtils.IMAGE_INTENT));
+	}
+
+	
+	@Override
+	protected void onPause() {
+		unregisterReceiver(mMessageReceiver);
+		super.onPause();
+	}
+
+	public ArrayList<Items> getCategory(ArrayList<Category> cat,String catid)
+	{
+		if(cat.size()==0)
+		{
+			return null;
+		}
+		else
+		{
+			for(int i=0;i<cat.size();i++)
+			{
+				if(cat.get(i).getId().equals(catid))
+				{
+					return cat.get(i).getIt();
+				}
+				else
+				{
+					ArrayList<Category> d=cat.get(i).getChildren();
+					if(d.size()>0)
+					{
+						if(getCategory(d, catid)!=null)
+						{
+							return getCategory(d, catid);
+						}
+					}
+				}
+			}
+		}
+		return null;
+	}
+	ArrayList<Category> myChildren(JSONArray ab)
+	{
+		try
+		{
+		ArrayList<Category> a=new ArrayList<Category>();
+		 for(int i=0;i<ab.length();i++)
+	     {
+	         JSONObject ac=ab.getJSONObject(i);
+	         
+	         JSONArray db=ac.getJSONArray("children");
+	         Category aq=new Category(ac.getString("id"), ac.getString("name"), new ArrayList<Items>());
+	         if(db.length()>0)
+	         {
+	            
+	        	 aq.setChildren((myChildren(db))) ;
+	        	
+	         }
+	         else
+	         {
+	        	 aq.setChildren(new ArrayList<Category>());
+	         }
+	         a.add(aq);
+	         //item.add(new ArrayList<Category>());
+	         
+	     }
+		 return a;
+		}
+		 catch(Exception e)
+		 {
+			 
+		 }
+		return null;
+		
+		
+	}
+	public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+    // Raw height and width of image
+    final int height = options.outHeight;
+    final int width = options.outWidth;
+    int inSampleSize = 1;
+
+    if (height > reqHeight || width > reqWidth) {
+
+        // Calculate ratios of height and width to requested height and width
+        final int heightRatio = Math.round((float) height / (float) reqHeight);
+        final int widthRatio = Math.round((float) width / (float) reqWidth);
+
+        // Choose the smallest ratio as inSampleSize value, this will guarantee
+        // a final image with both dimensions larger than or equal to the
+        // requested height and width.
+        inSampleSize = heightRatio < widthRatio ? heightRatio : widthRatio;
+    }
+
+    return inSampleSize;
+}
+	public static Bitmap decodeSampledBitmapFromResource(String path, 
+	        int reqWidth, int reqHeight) {
+
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    final BitmapFactory.Options options = new BitmapFactory.Options();
+	    options.inJustDecodeBounds = true;
+	    BitmapFactory.decodeFile(path, options);
+
+	    // Calculate inSampleSize
+	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    return BitmapFactory.decodeFile(path, options);
+	}
+
+	@Override
+	public void onBackPressed() {
+		// TODO Auto-generated method stub
+		super.onBackPressed();
+	}
+}

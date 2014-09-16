@@ -1,0 +1,48 @@
+package com.jc.b2b.utils;
+
+import android.content.Context;
+import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.GridView;
+
+public class ButtonAdapter extends BaseAdapter {
+    private Context mContext;
+
+    public ButtonAdapter(Context c) {
+        mContext = c;
+    }
+
+    public int getCount() {
+        return Gradients.AllGradients().size();
+    }
+
+    public Object getItem(int position) {
+        return null;
+    }
+
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @SuppressWarnings("deprecation")
+	public View getView(int position, View convertView, ViewGroup parent) {
+        View b;
+        if (convertView == null) {
+            b = new Button(mContext);
+            b.setLayoutParams(new GridView.LayoutParams(LayoutParams.FILL_PARENT, 50));            
+            b.setPadding(8, 8, 8, 8);
+              
+        } else {
+            b = (View) convertView;
+        }
+        
+        final GradientColor gd = Gradients.AllGradients().get(position);
+        b.setBackgroundDrawable(Gradients.NewGradient(gd));
+       
+        
+        return b;
+    }    
+}

@@ -1,0 +1,16 @@
+1369070753067	Rename type 'Item'
+1369233674128	Move compilation unit
+1369247914943	Delete element
+1369390013372	Move compilation unit
+1369410734358	Rename field 'qtyonhand'
+1369436400254	Extracts string 'null' into R.string.warehouse
+1369437326826	Rename field 'button2'
+1369486451076	Extracts string 'null' into R.string.total
+1369486479805	Extracts string 'null' into R.string.zero
+1369486573739	Extracts string 'null' into R.string.totalitems
+1369522903999	Extracts string 'null' into R.string.date
+1369522934141	Extracts string 'null' into R.string.placed_by
+1369522963683	Extracts string 'null' into R.string.placed_to
+1369523000208	Extracts string 'null' into R.string.shipment_address
+1369523406350	Extracts string 'null' into R.string.vieworderlist
+1369523686241	Extracts string 'null' into R.string.order_details

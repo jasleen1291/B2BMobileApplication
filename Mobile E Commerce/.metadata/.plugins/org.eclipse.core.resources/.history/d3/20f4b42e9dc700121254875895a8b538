@@ -1,0 +1,255 @@
+package com.jc.b2b;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.text.Html;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseExpandableListAdapter;
+import android.widget.ExpandableListView;
+import android.widget.ExpandableListView.OnChildClickListener;
+import android.widget.TextView;
+
+import com.jc.b2b.admin.AddCategory;
+import com.jc.b2b.admin.DeleteSupplier;
+import com.jc.b2b.admin.FinePricing;
+import com.jc.b2b.admin.GeneralComplaint;
+import com.jc.b2b.admin.GeneralNotification;
+import com.jc.b2b.admin.ItemComplaintItem;
+import com.jc.b2b.admin.ItemComplaintShop;
+import com.jc.b2b.admin.NLevel.EditNameDialogListener;
+import com.jc.b2b.admin.AddSubCategory;
+import com.jc.b2b.admin.AdvertisementPricing;
+import com.jc.b2b.admin.RestoreCustomer;
+import com.jc.b2b.admin.RestoreRetailer;
+import com.jc.b2b.admin.RestoreSupplier;
+import com.jc.b2b.admin.ShopComplaint;
+import com.jc.b2b.admin.ShopPricing;
+import com.jc.b2b.admin.UrgentNotification;
+import com.jc.b2b.admin.ViewAdvertisements;
+import com.jc.b2b.admin.ViewFinePricing;
+import com.jc.b2b.admin.ViewShopPricing;
+import com.jc.b2b.utils.B2BUtils;
+import com.jc.b2b.utils.ChildItem;
+
+public class Admin_area extends FragmentActivity implements EditNameDialogListener {
+	int mStackLevel=0;
+	List<String> groupItems;
+	List<List<ChildItem>> childItems;
+	ExpandableListView el;
+	android.support.v4.app.FragmentTransaction fragmentTransaction;
+	android.support.v4.app.FragmentManager fm;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_admin_area);
+		groupItems = new ArrayList<String>();
+		childItems = new ArrayList<List<ChildItem>>();
+
+		fm = getSupportFragmentManager();
+		 fragmentTransaction = fm
+				.beginTransaction();
+
+		// add a fragment
+		AdminHome myFragment = new AdminHome();
+		fragmentTransaction.add(R.id.myfragment, myFragment);
+		fragmentTransaction.commit();
+		// Complaints
+		groupItems.add("Complaints");
+		List<ChildItem> complaints = new ArrayList<ChildItem>();
+		complaints.add(new ChildItem(new GeneralComplaint(),
+				"General Complaint"));
+		complaints.add(new ChildItem(new ItemComplaintItem(), "Item Complaint"+System.getProperty ("line.separator")+"(Sorted By Item)"));
+		complaints.add(new ChildItem(new ItemComplaintShop(), "Item Complaint"+System.getProperty ("line.separator")+"(Sorted By Shop)"));
+		complaints.add(new ChildItem(new ShopComplaint(), "Shop Complaint"));
+		childItems.add(complaints);
+		//Notifications
+		groupItems.add("Notification");
+		List<ChildItem> notification = new ArrayList<ChildItem>();
+		notification.add(new ChildItem(new GeneralNotification(),
+				"General Notification"));
+		notification.add(new ChildItem(new UrgentNotification(), "Urgent Notification"));
+		childItems.add(notification);
+		//Customers
+		groupItems.add("Customers");
+		List<ChildItem> Customers = new ArrayList<ChildItem>();
+		Customers.add(new ChildItem(new DeleteCustomer(),
+				"Delete Customers"));
+		Customers.add(new ChildItem(new RestoreCustomer(), "Restore Customers"));
+		childItems.add(Customers);
+		//Retailers
+		groupItems.add("Retailers");
+		List<ChildItem> Retailers = new ArrayList<ChildItem>();
+		Retailers.add(new ChildItem(new DeleteRetailer(),
+				"Delete Retailers"));
+		Retailers.add(new ChildItem(new RestoreRetailer(), "Restore Retailers"));
+		childItems.add(Retailers);
+		//Suppliers
+		groupItems.add("Suppliers");
+		List<ChildItem> Suppliers = new ArrayList<ChildItem>();
+		Suppliers.add(new ChildItem(new DeleteSupplier(),
+				"Delete Suppliers"));
+		Suppliers.add(new ChildItem(new RestoreSupplier(), "Restore Suppliers"));
+		childItems.add(Suppliers);
+		//Advertisement Pricing
+		groupItems.add("Advertisement pricing");
+		List<ChildItem> Advertisementpricing = new ArrayList<ChildItem>();
+		Advertisementpricing.add(new ChildItem(new AdvertisementPricing(),
+				"Add"));
+		Advertisementpricing.add(new ChildItem(new ViewAdvertisements(), "Modify"));
+		childItems.add(Advertisementpricing);
+		//Fine Pricing
+		groupItems.add("Fine pricing");
+		List<ChildItem> Finepricing = new ArrayList<ChildItem>();
+		Finepricing.add(new ChildItem(new FinePricing(),
+				"Add"));
+		Finepricing.add(new ChildItem(new ViewFinePricing(), "Modify"));
+		childItems.add(Finepricing);
+		//Shop Pricing
+		groupItems.add("Shop pricing");
+		List<ChildItem> Shoppricing = new ArrayList<ChildItem>();
+		Shoppricing.add(new ChildItem(new ShopPricing(),
+				"Add"));
+		Shoppricing.add(new ChildItem(new ViewShopPricing(), "Modify"));
+		childItems.add(Shoppricing);
+		//Shop Pricing
+		groupItems.add("Category");
+		List<ChildItem> Category = new ArrayList<ChildItem>();
+		Category.add(new ChildItem(new AddCategory(),
+				"Add Category"));
+		Category.add(new ChildItem(new AddSubCategory(), "Add Sub Category"));
+		childItems.add(Category);
+		el = (ExpandableListView) findViewById(R.id.adminTask);
+		
+		el.setOnChildClickListener(new OnChildClickListener() {
+			
+			@Override
+			public boolean onChildClick(ExpandableListView parent, View v,
+					int groupPosition, int childPosition, long id) {
+				try
+				{
+				Fragment ab=childItems.get(groupPosition).get(childPosition).getA();
+				 fragmentTransaction = fm
+							.beginTransaction();
+				fragmentTransaction.replace(R.id.myfragment, ab,childItems.get(groupPosition).get(childPosition).getB());
+				Log.d("sd", childItems.get(groupPosition).get(childPosition).getB());
+				fragmentTransaction.commit();
+				}
+				catch(Exception e)
+				{
+					Log.d(B2BUtils.LogString, e.toString());
+				}
+				return true;
+			}
+		});
+		el.setAdapter(new MyAadpter());
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.admin_area, menu);
+		return true;
+	}
+
+	class MyAadpter extends BaseExpandableListAdapter {
+
+		@Override
+		public Object getChild(int groupPosition, int childPosition) {
+			// TODO Auto-generated method stub
+			return childItems.get(groupPosition).get(childPosition);
+		}
+
+		@Override
+		public long getChildId(int groupPosition, int childPosition) {
+			// TODO Auto-generated method stub
+			return childPosition;
+		}
+
+		@Override
+		public View getChildView(int groupPosition, int childPosition,
+				boolean isLastChild, View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				LayoutInflater infalInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+				convertView = infalInflater
+						.inflate(R.layout.child_layout, null);
+			}
+			TextView tv = (TextView) convertView.findViewById(R.id.child);
+			tv.setText(Html.fromHtml("&#8226; "+childItems.get(groupPosition).get(childPosition).getB()));
+			return convertView;
+
+		}
+
+		@Override
+		public int getChildrenCount(int groupPosition) {
+			// TODO Auto-generated method stub
+			return childItems.get(groupPosition).size();
+		}
+
+		@Override
+		public Object getGroup(int groupPosition) {
+			// TODO Auto-generated method stub
+			return groupItems.get(groupPosition);
+		}
+
+		@Override
+		public int getGroupCount() {
+			// TODO Auto-generated method stub
+			return groupItems.size();
+		}
+
+		@Override
+		public long getGroupId(int groupPosition) {
+			// TODO Auto-generated method stub
+			return groupPosition;
+		}
+
+		@Override
+		public View getGroupView(int groupPosition, boolean isExpanded,
+				View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				LayoutInflater infalInflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+				convertView = infalInflater
+						.inflate(R.layout.group_layout, null);
+			}
+			TextView tv = (TextView) convertView.findViewById(R.id.group);
+			tv.setText(groupItems.get(groupPosition));
+			return convertView;
+		}
+
+		@Override
+		public boolean hasStableIds() {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+		@Override
+		public boolean isChildSelectable(int groupPosition, int childPosition) {
+			// TODO Auto-generated method stub
+			return true;
+		}
+
+	}
+
+	@Override
+	public void onFinishEditDialog(String inputText) {
+		// TODO Auto-generated method stub
+		//Log.d("1", inputText);
+		AddSubCategory asc=(AddSubCategory)fm.findFragmentByTag("Add Sub Category");
+		if(asc!=null )
+		{
+			//Log.d("2", inputText);
+			asc.updateCategory(inputText);
+		}
+		
+	}
+	
+	
+}

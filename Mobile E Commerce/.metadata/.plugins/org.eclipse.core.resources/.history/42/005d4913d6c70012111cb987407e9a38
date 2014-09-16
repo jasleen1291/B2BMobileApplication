@@ -1,0 +1,208 @@
+package com.jc.b2b.utils;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.util.Log;
+
+@SuppressLint("DefaultLocale")
+public class B2BUtils {
+	public static User user;
+	public static Shop shop;
+	public static HashMap<String,Bitmap> imgs=new HashMap<String, Bitmap>();
+	public static HashMap<String, String> shops=new HashMap<String, String>();
+	public static Shop getShop() {
+		return shop;
+	}
+
+	public static void setShop(Shop shop) {
+		B2BUtils.shop = shop;
+	}
+
+	public static User getUser() {
+		return user;
+	}
+	public static String CATEGORY_INTENT="com.jc.b2b.selectedcategory";
+	public static String IMAGE_INTENT="com.jc.b2b.imagedownloaded";
+	public static void setUser(User user) {
+		B2BUtils.user = user;
+	}
+
+	public static ArrayList<String> categoryNames=new ArrayList<String>();
+	public static ArrayList<String> categoryId=new ArrayList<String>();
+	public static String LogString = "Error";
+	public static Hashtable<String, String> country = new Hashtable<String, String>();
+	public static Hashtable<String, ArrayList<String>> cities = new Hashtable<String, ArrayList<String>>();
+	public static Hashtable<String, String> zerolevelcategories=new Hashtable<String, String>();
+	public static JSONObject getJSOn(String urls) {
+		try {
+			URL oracle = new URL(urls);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					oracle.openStream()));
+
+			String inputLine, result = "";
+			while ((inputLine = in.readLine()) != null)
+				result = result + inputLine;
+			in.close();
+			JSONObject countryJSON = new JSONObject(result);
+			return countryJSON;
+		} catch (Exception e) {
+			try {
+				return new JSONObject().put("Error", e.toString());
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				Log.d("Error", e1.toString());
+			}
+		}
+		return null;
+	}
+	
+	public static JSONArray getJSOnArr(String urls) {
+		try {
+			URL oracle = new URL(urls);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					oracle.openStream()));
+
+			String inputLine, result = "";
+			while ((inputLine = in.readLine()) != null)
+				result = result + inputLine;
+			in.close();
+			JSONArray countryJSON = new JSONArray(result);
+			return countryJSON;
+		} catch (Exception e) {
+				Log.d("Error", e.toString());
+			
+		}
+		return null;
+	}
+	public static void getShops()
+	{
+		JSONObject a=getJSOn("http://10.0.2.2:8080/B2B/shop.jsp?opt=selectall");
+		Iterator<?> keys=a.keys();
+		shops.put("-1", "Miscellaneous");
+		while(keys.hasNext())
+		{
+			String id=keys.next().toString();
+			try {
+				shops.put(id, a.getString(id));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+	}
+	public static JSONObject submitSimpleForm(String url,
+			List<NameValuePair> params) {
+		String paramString = "?" + URLEncodedUtils.format(params, "utf-8");
+
+		url += paramString;
+		Log.d("URL", url);
+		try {
+			URL oracle = new URL(url);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					oracle.openStream()));
+
+			String inputLine, result = "";
+			while ((inputLine = in.readLine()) != null)
+				result = result + inputLine;
+			in.close();
+			JSONObject countryJSON = new JSONObject(result);
+			return countryJSON;
+		} catch (Exception e) {
+			try {
+				return new JSONObject().put("Error", e.toString());
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				Log.d("Error", e1.toString());
+			}
+		}
+		return null;
+	}
+
+	public static JSONArray submitSimpleFormA(String url,
+			List<NameValuePair> params) {
+		String paramString = "?" + URLEncodedUtils.format(params, "utf-8");
+
+		url += paramString;
+		Log.d("url", url);
+		try {
+			URL oracle = new URL(url);
+
+			BufferedReader in = new BufferedReader(new InputStreamReader(
+					oracle.openStream()));
+
+			String inputLine, result = "";
+			while ((inputLine = in.readLine()) != null)
+				result = result + inputLine;
+			in.close();
+			JSONArray countryJSON = new JSONArray(result);
+			return countryJSON;
+		} catch (Exception e) {
+			return new JSONArray().put(e.toString());
+		}
+
+	}
+
+	@SuppressLint("DefaultLocale")
+	public static ArrayList<String> getCategories() {
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair("opt", "select"));
+		try {
+			JSONArray a = submitSimpleFormA(
+					"http://10.0.2.2:8080/B2B/category.jsp", params);
+			for (int i = 0; i < a.length(); i++) {
+				JSONObject temp = a.getJSONObject(i);
+				zerolevelcategories.put(temp.getString("id"), temp.getString("name"));
+				categoryNames.add(temp.getString("name").toUpperCase());
+				categoryId.add(temp.getString("id"));
+				Log.d("s",temp.getString("name"));
+				JSONArray ab = temp.getJSONArray("children");
+				if (ab.length() > 0) {
+					getChildren(ab, temp.getString("name"));
+				}
+			}
+		} catch (Exception e) {
+			Log.d("Network Exception", e.toString());
+		}
+		return categoryNames;
+	}
+
+	@SuppressLint("DefaultLocale")
+	public static void getChildren(JSONArray a, String parent) {
+		try {
+			for (int i = 0; i < a.length(); i++) {
+				JSONObject temp = a.getJSONObject(i);
+				
+				categoryNames.add(temp.getString("name").toUpperCase());
+				categoryId.add(temp.getString("id"));
+				//Log.d("s",temp.getString("name"));
+				JSONArray ab = temp.getJSONArray("children");
+				if (ab.length() > 0) {
+					getChildren(ab, temp.getString("name"));
+				}
+			}
+		} catch (Exception e) {
+			Log.d("Network Exception", e.toString());
+		}
+
+	}
+}

@@ -1,0 +1,366 @@
+package com.jc.b2b;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import android.app.Activity;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import com.jc.b2b.utils.B2BUtils;
+import com.jc.b2b.utils.InsertForm;
+import com.jc.b2b.utils.Warehouse;
+
+/**
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * 
+ */
+public class ViewWareHouse extends Fragment {
+
+	public ViewWareHouse() {
+		// Required empty public constructor
+	}
+ListView lv;
+int r=0;
+ArrayList<Warehouse> warehouse;
+warehouseAdapter adapter;
+Spinner country,state,city;
+ArrayAdapter<String> countryAdapter,stateAdapter,cityAdpater;
+EditText name,address,zipcode;
+Button submit;
+ArrayList<String> countryList=new ArrayList<String>();
+ArrayList<String> statesList=new ArrayList<String>();
+ArrayList<String> citesList=new ArrayList<String>();
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		View view2= inflater.inflate(R.layout.fragment_view_ware_house, container,
+				false);
+		warehouse=new ArrayList<Warehouse>();
+		warehouse.clear();
+		adapter=new warehouseAdapter();
+		lv=(ListView)view2.findViewById(R.id.listView1);
+		lv.setAdapter(adapter);
+		new FetchWarehouse().execute("");
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				r=arg2;
+			final	Dialog dialog=new Dialog(getActivity());
+				LayoutInflater inflator=(LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+				
+				View view= inflator.inflate(R.layout.fragment_add_warehouse, null,
+						false);
+				dialog.setContentView(view);
+				dialog.show();
+				country=(Spinner)view.findViewById(R.id.country);
+				state=(Spinner)view.findViewById(R.id.state);
+				city=(Spinner)view.findViewById(R.id.city);
+				//signupAs=(Spinner)findViewById(R.id.signup);
+				countryAdapter=new ArrayAdapter<String>(getActivity().getApplicationContext(),R.layout.spinner_item, countryList);
+				//country.setBackgroundColor(Color.BLACK);
+				stateAdapter=new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.spinner_item, statesList);
+				cityAdpater=new ArrayAdapter<String>(getActivity().getApplicationContext(), R.layout.spinner_item,citesList);
+				country.setAdapter(countryAdapter);
+				state.setAdapter(stateAdapter);
+				city.setAdapter(cityAdpater);
+				name=(EditText)view.findViewById(R.id.editText1);
+				name.setText(warehouse.get(arg2).getWarehousename());
+				address=(EditText)view.findViewById(R.id.editText2);
+				address.setText(warehouse.get(arg2).getAddress());
+				zipcode=(EditText)view.findViewById(R.id.zipcode);
+				zipcode.setText(warehouse.get(arg2).getZip());
+				submit=(Button)view.findViewById(R.id.submit);
+				submit.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View arg0) {
+						//  request.getParameter("id") + "'
+						 List<NameValuePair> params = new LinkedList<NameValuePair>();
+						params.add(new BasicNameValuePair("warehouse", "warehouse"));
+						params.add(new BasicNameValuePair("opt", "update"));
+						params.add(new BasicNameValuePair("name", name.getText().toString()));
+						params.add(new BasicNameValuePair("address", address.getText().toString()));
+						params.add(new BasicNameValuePair("city", city.getSelectedItem().toString()));
+						params.add(new BasicNameValuePair("state", state.getSelectedItem().toString()));
+						params.add(new BasicNameValuePair("country", country.getSelectedItem().toString()));
+						params.add(new BasicNameValuePair("zip", zipcode.getText().toString()));
+						params.add(new BasicNameValuePair("id", warehouse.get(r).getIdWarehouse()));
+						new InsertForm(getActivity(), params).execute("http://10.0.2.2:8080/B2B/warehouse.jsp");
+						dialog.dismiss();
+						new FetchWarehouse().execute("");
+					}
+				});
+				//signupAs.setAdapter(signupAsAdapter);
+				state.setEnabled(false);
+				city.setEnabled(false);
+				new FetchCountries(getActivity()).execute(new String[]{""});
+				country.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+					@Override
+					public void onItemSelected(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						state.setEnabled(true);
+						Log.d(countryList.get(arg2),B2BUtils.country.get(countryList.get(arg2)));
+						new FetchStates().execute(new String[]{countryList.get(arg2)});
+						
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				state.setOnItemSelectedListener(new OnItemSelectedListener() {
+
+					@Override
+					public void onItemSelected(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						city.setEnabled(true);
+						Log.d("lol", statesList.get(arg2));
+						citesList.clear();
+						citesList.addAll(B2BUtils.cities.get(statesList.get(arg2)));
+						Log.d("lol", citesList.size()+"");
+						cityAdpater.notifyDataSetChanged();
+					}
+
+					@Override
+					public void onNothingSelected(AdapterView<?> arg0) {
+						// TODO Auto-generated method stub
+						
+					}
+				});
+				
+			}
+		});
+		return view2;
+		
+	}
+class FetchWarehouse extends AsyncTask<String, String, String>
+{
+
+	@Override
+	protected String doInBackground(String... params) {
+		// TODO Auto-generated method stub
+		JSONArray arr = B2BUtils.getJSOnArr("http://10.0.2.2:8080/B2B/warehouse.jsp?opt=selectw&wid="+B2BUtils.user.getMasterid());
+		for (int j = 0; j < arr.length(); j++) {
+			try {
+				JSONObject ob1 = arr.getJSONObject(j);
+				if (ob1.getString("idwarehouse").equals("-1")) {
+
+				} else {
+					
+					warehouse.add(new Warehouse(ob1.getString("idwarehouse"), ob1.getString("warehousename"), ob1.getString("address"), ob1.getString("city"), ob1.getString("state"), ob1.getString("country") , ob1.getString("zip"), B2BUtils.user.getMasterid()));
+				}
+			} catch (Exception e) {
+				Log.d(B2BUtils.LogString, e.toString());
+			}
+		
+	}
+		return null;
+	}
+
+	@Override
+	protected void onPostExecute(String result) {
+		adapter.notifyDataSetChanged();
+		super.onPostExecute(result);
+	}
+	
+}
+class warehouseAdapter extends BaseAdapter
+{
+
+	@Override
+	public int getCount() {
+		// TODO Auto-generated method stub
+		return warehouse.size();
+	}
+
+	@Override
+	public Object getItem(int arg0) {
+		// TODO Auto-generated method stub
+		return warehouse.get(arg0);
+	}
+
+	@Override
+	public long getItemId(int arg0) {
+		// TODO Auto-generated method stub
+		return arg0;
+	}
+
+	@Override
+	public View getView(int arg0, View arg1, ViewGroup arg2) {
+		LayoutInflater inflator=(LayoutInflater)getActivity().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+		arg1=inflator.inflate(R.layout.warehouse, null);
+		TextView tv=(TextView)arg1.findViewById(R.id.textView1);
+		tv.setText(warehouse.get(arg0).getWarehousename());
+		TextView tv2=(TextView)arg1.findViewById(R.id.textView2);
+		tv2.setText(warehouse.get(arg0).getAddress());
+		TextView tv3=(TextView)arg1.findViewById(R.id.textView3);
+		tv3.setText(warehouse.get(arg0).getCity());
+		TextView tv4=(TextView)arg1.findViewById(R.id.textView4);
+		tv4.setText(warehouse.get(arg0).getState());
+		TextView tv5=(TextView)arg1.findViewById(R.id.textView5);
+		tv5.setText(warehouse.get(arg0).getCountry());
+		TextView tv6=(TextView)arg1.findViewById(R.id.textView6);
+		tv6.setText("Zip"+warehouse.get(arg0).getZip());
+		return null;
+	}
+	
+}
+class FetchCountries extends AsyncTask<String, String, String>
+{
+
+	ProgressDialog progress;
+	Context context;
+	public FetchCountries(Activity activity) {
+		super();
+	}
+
+	@Override
+	protected void onPostExecute(String result) {
+		if (progress.isShowing()) {
+			progress.dismiss();
+		}
+		countryAdapter.notifyDataSetChanged();
+		super.onPostExecute(result);
+	}
+
+	@Override
+	protected void onPreExecute() {
+		progress=new ProgressDialog(getActivity());
+		progress.setTitle("Fetching Countries Please wait...");
+		progress.show();
+		
+		super.onPreExecute();
+	}
+
+	@Override
+	protected String doInBackground(String... params) {
+		
+		try
+		{
+		 URL oracle = new URL("http://10.0.2.2:8080/B2B/getCountryList.jsp");
+		 
+	        BufferedReader in = new BufferedReader(
+	        new InputStreamReader(oracle.openStream()));
+	       
+	        String inputLine,result="";
+	        while ((inputLine = in.readLine()) != null)
+	            result=result+inputLine;
+	        in.close();
+	        JSONObject countryJSON=new JSONObject(result);
+	        Iterator<?> it=countryJSON.keys();
+	        while(it.hasNext())
+	        {
+	        	String key=it.next().toString();
+	        	String value=countryJSON.get(key).toString();
+	        	B2BUtils.country.put(value,key);
+	        	countryList.add(value);
+	        	}
+	       Collections.sort(countryList);
+		}
+		catch(Exception e)
+		{
+			Log.d(B2BUtils.LogString,e.toString());
+		}
+		return null;
+	}
+
+}
+class FetchStates extends AsyncTask<String, String, String>
+{
+ProgressDialog progress;
+	@Override
+	protected void onPostExecute(String result) {
+		if (progress.isShowing()) {
+			
+			progress.dismiss();
+		}
+		stateAdapter.notifyDataSetChanged();
+		super.onPostExecute(result);
+	}
+
+	@Override
+	protected void onPreExecute() {
+		progress=new ProgressDialog(getActivity());
+		progress.setTitle("Fetching States Please wait...");
+		progress.show();
+		super.onPreExecute();
+	}
+
+	@Override
+	protected String doInBackground(String... params) {
+		// TODO Auto-generated method stub
+		try
+		{
+			statesList.clear();
+		 URL oracle = new URL("http://10.0.2.2:8080/B2B/getCityList.jsp?cc="+B2BUtils.country.get(params[0]));
+		 
+	        BufferedReader in = new BufferedReader(
+	        new InputStreamReader(oracle.openStream()));
+	       
+	        String inputLine,result="";
+	        while ((inputLine = in.readLine()) != null)
+	            result=result+inputLine;
+	        in.close();
+	        JSONObject countryJSON=new JSONObject(result);
+	        Iterator<?> it=countryJSON.keys();
+	        while(it.hasNext())
+	        {
+	        	String key=it.next().toString();
+	        	JSONArray value=(JSONArray)countryJSON.get(key);
+	        	ArrayList<String> obj=new ArrayList<String>();
+	        	for(int i=0;i<value.length();i++)
+	        	{
+	        		obj.add((String) value.get(i));
+	        		//Log.d(key, (String)value.get(i));
+	        	}
+	        	B2BUtils.cities.put(key, obj);
+	        	statesList.add(key);
+	        	}
+	       Collections.sort(statesList);
+		}
+		catch(Exception e)
+		{
+			Log.d(B2BUtils.LogString,e.toString());
+		}
+		return null;
+	}
+
+}
+
+}

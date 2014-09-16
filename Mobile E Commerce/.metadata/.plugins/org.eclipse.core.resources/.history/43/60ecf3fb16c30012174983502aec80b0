@@ -1,0 +1,34 @@
+package com.jc.b2b;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+
+/**
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * 
+ */
+public class AddSubCategorySupplier extends Fragment {
+
+	public AddSubCategorySupplier() {
+		
+	    
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		// Inflate the layout for this fragment
+
+        FragmentManager fm = getChildFragmentManager();
+        SelectCategory editNameDialog = new SelectCategory();
+        editNameDialog.show(fm, "fragment_edit_name");
+        
+		return inflater.inflate(R.layout.fragment_add_sub_category_supplier,
+				container, false);
+	}
+
+}

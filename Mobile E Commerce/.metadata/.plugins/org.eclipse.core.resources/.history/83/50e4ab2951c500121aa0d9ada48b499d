@@ -1,0 +1,9 @@
+package com.jc.b2b.utils;
+
+import android.graphics.Bitmap;
+
+public class ShoppingcartItem {
+Bitmap bmp;
+String name,qty,pathname;
+
+}

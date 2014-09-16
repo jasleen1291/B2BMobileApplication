@@ -1,0 +1,33 @@
+package com.jc.b2b.utils;
+
+import android.graphics.Bitmap;
+
+public class ShoppingcartItem {
+Bitmap bmp;
+String name,qty;
+public ShoppingcartItem(Bitmap bmp, String name, String qty) {
+	super();
+	this.bmp = bmp;
+	this.name = name;
+	this.qty = qty;
+}
+public Bitmap getBmp() {
+	return bmp;
+}
+public void setBmp(Bitmap bmp) {
+	this.bmp = bmp;
+}
+public String getName() {
+	return name;
+}
+public void setName(String name) {
+	this.name = name;
+}
+public String getQty() {
+	return qty;
+}
+public void setQty(String qty) {
+	this.qty = qty;
+}
+
+}

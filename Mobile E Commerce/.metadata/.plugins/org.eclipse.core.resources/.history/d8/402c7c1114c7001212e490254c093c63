@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal" >
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:orientation="vertical" >
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:contentDescription="@string/action_forgot_password"
+            android:src="@drawable/listlevel1" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                
+                android:text="@string/file_complaint"
+                android:textAppearance="?android:attr/textAppearanceSmall" />
+
+            <EditText
+                android:id="@+id/editText1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/complain" >
+
+                <requestFocus />
+            </EditText>
+
+            <EditText
+                android:id="@+id/editText2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/description"
+                android:inputType="textMultiLine" />
+
+            <Button
+                android:id="@+id/button1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/submit" />
+
+        </LinearLayout>
+
+       
+
+    </LinearLayout>
+ <LinearLayout
+           android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="7"
+            android:orientation="vertical" >
+
+<TableLayout
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+   
+    android:gravity="left"
+    android:orientation="vertical"
+    android:padding="0dp"
+    android:stretchColumns="*" >
+
+        <TableRow
+            android:id="@+id/TableRow4"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+               
+                android:text="@string/itemname" />
+
+            <TextView
+                android:id="@+id/name"
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="right"
+                android:textIsSelectable="false" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="0dp"
+            android:focusable="false"
+            android:paddingTop="0dp" >
+
+            <TextView
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/sp" />
+
+            <TextView
+                android:id="@+id/sp"
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="right"
+                android:textIsSelectable="false" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow2"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/discount" />
+
+            <TextView
+                android:id="@+id/discount"
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="right"
+                android:textIsSelectable="false" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/TableRow3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/minorder" />
+
+            <TextView
+                android:id="@+id/minorder"
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="right"
+                android:textIsSelectable="false" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content" >
+
+            <TextView
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:text="@string/qtyonhand" />
+
+            <TextView
+                android:id="@+id/qtyonhand"
+                style="@style/titlebarstylesmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:layout_gravity="right"
+                android:textIsSelectable="false" />
+        </TableRow>
+    </TableLayout>
+
+     <Button
+         android:id="@+id/button2"
+         android:layout_width="wrap_content"
+         android:layout_height="wrap_content"
+         android:text="@string/visitshop" />
+
+        </LinearLayout>
+</LinearLayout>

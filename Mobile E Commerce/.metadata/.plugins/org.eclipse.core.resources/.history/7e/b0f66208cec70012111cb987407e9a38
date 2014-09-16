@@ -1,0 +1,56 @@
+package com.jc.b2b;
+
+import java.util.ArrayList;
+
+import com.jc.b2b.utils.ChildItem;
+
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.util.Log;
+import android.view.Menu;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+
+public class CustomerArea extends FragmentActivity {
+ListView lv;
+android.support.v4.app.FragmentTransaction fragmentTransaction;
+android.support.v4.app.FragmentManager fm;
+ArrayList<ChildItem> ab=new ArrayList<ChildItem>();
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.activity_customer_area);
+
+		fm = getSupportFragmentManager();
+		fragmentTransaction = fm.beginTransaction();
+		ab.add(new ChildItem(new CustomerHome(), "Search Item"));
+		ab.add(new ChildItem(new MyShoppingCart(), "Shopping Cart"));
+		ab.add(new ChildItem(new MySavedItems(),"My Saved Items"));
+		lv=(ListView)findViewById(R.id.list);
+		lv.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				// TODO Auto-generated method stub
+				Fragment a = ab.get(arg2).getA();
+		fragmentTransaction = fm.beginTransaction();
+		fragmentTransaction.replace(R.id.myfragment, a,  ab.get(arg2).getB());
+		
+		fragmentTransaction.commit();
+			}
+		});
+		
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.customer_area, menu);
+		return true;
+	}
+
+}

@@ -1,0 +1,104 @@
+package com.jc.b2b;
+
+import java.io.File;
+
+import com.jc.b2b.utils.Items;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
+import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+/**
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * 
+ */
+public class ViewItem extends Fragment {
+	protected static final int RESULT_LOAD_IMAGE = 0;
+	EditText itemname,desc,sp,discount,minorder,qtyonhand,qtyonorder;
+	TextView cp;
+	ImageView imageview1;
+	File file;
+	private String CACHE_FOLDER=".cache";
+	public ViewItem() {
+		// Required empty public constructor
+	}
+	Items items;
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		Bundle bundle=getArguments();
+		items=(Items) bundle.getSerializable("ap");
+		
+		String tmpLocation = 
+	    	Environment.getExternalStoragePublicDirectory(
+	    	        Environment.DIRECTORY_PICTURES
+	    	    ).getPath() + File.separator +CACHE_FOLDER ;
+		file=new File(tmpLocation+ File.separator +items.getImagepath());
+		View view = inflater.inflate(R.layout.fragment_view_item, container, false);
+		itemname=(EditText)view.findViewById(R.id.name);
+		desc=(EditText)view.findViewById(R.id.desc);
+		sp=(EditText)view.findViewById(R.id.sp);
+		discount=(EditText)view.findViewById(R.id.discount);
+		minorder=(EditText)view.findViewById(R.id.minorder);
+		qtyonhand=(EditText)view.findViewById(R.id.qtyonhand);
+		qtyonorder=(EditText)view.findViewById(R.id.qtyonorder);
+		cp=(TextView)view.findViewById(R.id.cp);
+		imageview1=(ImageView)view.findViewById(R.id.imageView1);
+		imageview1.setImageBitmap(BitmapFactory.decodeFile(tmpLocation+ File.separator +items.getImagepath()));
+		imageview1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				 Intent i = new Intent(
+	                        Intent.ACTION_PICK,
+	                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+	                 
+	                startActivityForResult(i, RESULT_LOAD_IMAGE);
+				
+			}
+		});
+		imageview1.setOnLongClickListener(new OnLongClickListener() {
+			
+			@Override
+			public boolean onLongClick(View arg0) {
+				// TODO Auto-generated method stub
+				return false;
+			}
+		});
+		return view;
+	}
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+ 
+            Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+ 
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+             
+            
+            imageview1.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+         file=new File(picturePath);
+        }
+			super.onActivityResult(requestCode, resultCode, data);
+	}
+	}

@@ -1,0 +1,143 @@
+package com.jc.b2b;
+
+import java.io.File;
+
+import org.apache.http.entity.mime.MultipartEntity;
+import org.apache.http.entity.mime.content.StringBody;
+
+import android.app.Activity;
+import android.content.Intent;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
+import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.jc.b2b.utils.B2BUtils;
+import com.jc.b2b.utils.Items;
+
+/**
+ * A simple {@link android.support.v4.app.Fragment} subclass.
+ * 
+ */
+public class ViewItem extends Fragment {
+	protected static final int RESULT_LOAD_IMAGE = 0;
+	EditText itemname,desc,sp,discount,minorder,qtyperunit;
+	TextView cp;
+	ImageView imageview1,expandedImage;
+	File file;
+	private String CACHE_FOLDER=".cache";
+	Button button1,button2,button3;
+	public ViewItem() {
+		// Required empty public constructor
+	}
+	Items items;
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		Bundle bundle=getArguments();
+		items=(Items) bundle.getSerializable("ap");
+		
+		String tmpLocation = 
+	    	Environment.getExternalStoragePublicDirectory(
+	    	        Environment.DIRECTORY_PICTURES
+	    	    ).getPath() + File.separator +CACHE_FOLDER ;
+		file=new File(tmpLocation+ File.separator +items.getImagepath());
+		View view = inflater.inflate(R.layout.fragment_view_item, container, false);
+		itemname=(EditText)view.findViewById(R.id.name);
+		desc=(EditText)view.findViewById(R.id.desc);
+		sp=(EditText)view.findViewById(R.id.sp);
+		discount=(EditText)view.findViewById(R.id.discount);
+		minorder=(EditText)view.findViewById(R.id.minorder);
+		qtyperunit=(EditText)view.findViewById(R.id.qtyperunit);
+		button1=(Button)view.findViewById(R.id.button1);
+		button2=(Button)view.findViewById(R.id.button2);
+		button2.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				try
+				{
+				MultipartEntity entity=new MultipartEntity();
+				entity.addPart("itemname", new StringBody(itemname.getText().toString()));
+				entity.addPart("longdescription", new StringBody(desc.getText().toString()));
+				entity.addPart("shopid", new StringBody(B2BUtils.shop.getIdshop()));
+				entity.addPart("qtyperunit", new StringBody(qtyperunit.getText().toString()));
+				entity.addPart("unit_of_measure", new StringBody(text));
+				}
+				catch(Exception e)
+				{
+					Log.d(B2BUtils.LogString, e.toString());
+				}
+			}
+		});
+		button3=(Button)view.findViewById(R.id.button);
+		cp=(TextView)view.findViewById(R.id.cp);
+		imageview1=(ImageView)view.findViewById(R.id.imageView1);
+		imageview1.setImageBitmap(BitmapFactory.decodeFile(tmpLocation+ File.separator +items.getImagepath()));
+		expandedImage=(ImageView)view.findViewById(R.id.expanded_image);
+		expandedImage.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+			expandedImage.setVisibility(View.GONE);
+			}
+		});
+		button3.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				 Intent i = new Intent(
+	                        Intent.ACTION_PICK,
+	                        android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+	                 
+	                startActivityForResult(i, RESULT_LOAD_IMAGE);
+				
+			}
+		});
+		imageview1.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View arg0) {
+				expandedImage.setVisibility(View.VISIBLE);
+				Bitmap bitmap = ((BitmapDrawable)imageview1.getDrawable()).getBitmap();
+				expandedImage.setImageBitmap(bitmap);
+				
+			}
+		});
+		return view;
+	}
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == RESULT_LOAD_IMAGE && resultCode == Activity.RESULT_OK && null != data) {
+            Uri selectedImage = data.getData();
+            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+ 
+            Cursor cursor = getActivity().getContentResolver().query(selectedImage,
+                    filePathColumn, null, null, null);
+            cursor.moveToFirst();
+ 
+            int columnIndex = cursor.getColumnIndex(filePathColumn[0]);
+            String picturePath = cursor.getString(columnIndex);
+            cursor.close();
+             
+            
+            imageview1.setImageBitmap(BitmapFactory.decodeFile(picturePath));
+         file=new File(picturePath);
+        }
+			super.onActivityResult(requestCode, resultCode, data);
+	}
+	}
